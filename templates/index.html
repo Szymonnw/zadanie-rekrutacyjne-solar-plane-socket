@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>stacja dron</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+</head>
+<body>
+    <h1>Podgląd z drona (Real-time)</h1>
+    {% if img %}
+        <img id="foto-drona" src="{{ url_for('static', filename='uploads/' + img) }}" alt="zdjecie z drona"
+            style="max-width: 600px; width: 100%; height: auto; border-radius: 8px;">
+    {% else %}
+        <p>Czekam na pierwsze zdjęcie...</p>
+    {% endif %}
+    <p id="tekst-komunikatu">{{msg}}</p>
+
+    <script>
+        var socket = io();
+
+        socket.on('nowe_dane', function(data) {
+            console.log("Otrzymano aktualizację!");
+            
+            document.getElementById('tekst-komunikatu').innerText = data.wiadomosc;
+            
+            var img = document.getElementById('foto-drona');
+            img.src = "/static/uploads/" + data.zdjecie_url + "?t=" + new Date().getTime();
+        });
+    </script>
+    
+</body>
+</html>
